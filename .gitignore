@@ -1,0 +1,30 @@
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
+.venv/
+.uv-cache/
+.data/
+coverage/
+*.log
+test-results/
+
+# Local environment variants and credentials
+*.env
+*.pem
+*.key
+*.p12
+*.pfx
+.npmrc
+
+# Editor, agent, and operating-system files
+.idea/
+.vscode/
+.agents/
+.codex/
+__pycache__/
+*.pyc
+*.tsbuildinfo
+.DS_Store
+Thumbs.db

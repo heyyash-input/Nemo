@@ -1,0 +1,15 @@
+node_modules
+dist
+.git
+.env
+.env.*
+*.env
+.data
+.venv
+.uv-cache
+.agents
+.codex
+test-results
+coverage
+*.log
+server/tests
