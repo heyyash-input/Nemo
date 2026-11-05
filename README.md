@@ -27,16 +27,23 @@ A college PBL project for managing employee expenses from the first receipt to t
 
 ## Approval workflow
 
-```mermaid
-flowchart LR
-    A[Employee draft] --> B[Submit with receipts]
-    B --> C[Manager approval]
-    C --> D[Finance verification]
-    D --> E[Reimbursement recorded]
-    C -->|Reject with reason| F[Employee corrects claim]
-    D -->|Reject with reason| F
-    F --> A
+```text
+Employee saves draft
+        |
+        v
+Employee submits claim + receipts
+        |
+        v
+Assigned Manager approves
+        |
+        v
+Finance verifies
+        |
+        v
+Finance records reimbursement + journal entries
 ```
+
+If the Manager or Finance rejects a claim, the Employee can correct the draft and submit it again.
 
 - **Employee:** creates and tracks personal claims.
 - **Manager:** reviews assigned employee claims.
