@@ -1,34 +1,79 @@
 import { z } from 'zod';
+
+// Shared password rules for account creation and password changes.
+export const passwordInput = z
+  .string()
+  .min(10)
+  .max(72)
+  .refine(
+    /* Enforce bcrypt's byte limit as well as the character limit. */ (value) =>
+      Buffer.byteLength(value, 'utf8') <= 72,
+    'Password must be at most 72 UTF-8 bytes.',
+  );
+
 export const id = z.string().regex(/^[a-f\d]{24}$/i, 'Invalid record ID');
 export const roles = ['employee', 'manager', 'finance', 'admin'];
 export const money = z.number().int().min(1).max(100000000);
-export const day = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Use YYYY-MM-DD').refine(v => {
-  const d = new Date(`${v}T00:00:00Z`);
-  return !Number.isNaN(d.getTime()) && d.toISOString().slice(0, 10) === v;
-}, 'Invalid calendar date');
-export const today = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Kolkata', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
+export const day = z
+  .string()
+  .regex(/^\d{4}-\d{2}-\d{2}$/, 'Use YYYY-MM-DD')
+  .refine(
+    /* Reject impossible calendar dates such as February 30. */ (v) => {
+      const d = new Date(`${v}T00:00:00Z`);
+      return !Number.isNaN(d.getTime()) && d.toISOString().slice(0, 10) === v;
+    },
+    'Invalid calendar date',
+  );
+/** Return today in India as YYYY-MM-DD for expense dates. */
+export const today = () =>
+  new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Kolkata',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(new Date());
 export const claimInput = z.object({
   title: z.string().trim().min(3).max(100),
   purpose: z.string().trim().min(5).max(1500),
-  items: z.array(z.object({
-    category: z.string().trim().min(1).max(60),
-    date: day,
-    merchant: z.string().trim().min(2).max(100),
-    description: z.string().trim().max(300).default(''),
-    amountMinor: money,
-    receiptId: id.nullish(),
-  })).min(1).max(20),
+  items: z
+    .array(
+      z.object({
+        category: z.string().trim().min(1).max(60),
+        date: day,
+        merchant: z.string().trim().min(2).max(100),
+        description: z.string().trim().max(300).default(''),
+        amountMinor: money,
+        receiptId: id.nullish(),
+      }),
+    )
+    .min(1)
+    .max(20),
 });
-export const policyInput = z.object({
-  maxClaimMinor: money,
-  receiptThresholdMinor: z.number().int().min(0).max(100000000),
-  submissionWindowDays: z.number().int().min(1).max(365),
-  categories: z.array(z.object({
-    name: z.string().trim().min(2).max(60),
-    limitMinor: money,
-    account: z.string().trim().min(3).max(100),
-  })).min(1).max(20),
-}).refine(p => new Set(p.categories.map(c => c.name.toLowerCase())).size === p.categories.length, 'Category names must be unique');
+export const policyInput = z
+  .object({
+    maxClaimMinor: money,
+    receiptThresholdMinor: z.number().int().min(0).max(100000000),
+    submissionWindowDays: z.number().int().min(1).max(365),
+    categories: z
+      .array(
+        z.object({
+          name: z.string().trim().min(2).max(60),
+          limitMinor: money,
+          account: z.string().trim().min(3).max(100),
+        }),
+      )
+      .min(1)
+      .max(20),
+  })
+  .refine(
+    /* Require unique category names regardless of case. */ (p) =>
+      new Set(
+        p.categories.map(
+          /* Normalize category names for duplicate detection. */ (c) => c.name.toLowerCase(),
+        ),
+      ).size === p.categories.length,
+    'Category names must be unique',
+  );
 export const defaultPolicy = {
   maxClaimMinor: 10000000,
   receiptThresholdMinor: 0,
@@ -42,29 +87,56 @@ export const defaultPolicy = {
     { name: 'Other', limitMinor: 500000, account: '6900 · Other business expenses' },
   ],
 };
+/** Collect submission problems such as spending limits, missing receipts, and invalid dates. */
 export function validatePolicy(claim, policy, currentDay = today()) {
   const problems = [];
-  if (claim.totalMinor > policy.maxClaimMinor) problems.push('Claim total exceeds the company limit.');
-  claim.items.forEach((item, index) => {
-    const label = `Line ${index + 1}`;
-    const category = policy.categories.find(c => c.name === item.category);
-    if (!category) problems.push(`${label}: category is not allowed by the current policy.`);
-    else if (item.amountMinor > category.limitMinor) problems.push(`${label}: amount exceeds the ${category.name} limit.`);
-    if (item.amountMinor > policy.receiptThresholdMinor && !item.receiptId) problems.push(`${label}: a receipt is required.`);
-    const age = (Date.parse(currentDay) - Date.parse(item.date)) / 86400000;
-    if (age < 0) problems.push(`${label}: expense date cannot be in the future.`);
-    if (age > policy.submissionWindowDays) problems.push(`${label}: expense is outside the ${policy.submissionWindowDays}-day submission window.`);
-  });
+  if (claim.totalMinor > policy.maxClaimMinor)
+    problems.push('Claim total exceeds the company limit.');
+  claim.items.forEach(
+    /* Check one expense line against the company policy. */ (item, index) => {
+      const label = `Line ${index + 1}`;
+      const category = policy.categories.find(
+        /* Find the current policy category for this expense. */ (c) => c.name === item.category,
+      );
+      if (!category) problems.push(`${label}: category is not allowed by the current policy.`);
+      else if (item.amountMinor > category.limitMinor)
+        problems.push(`${label}: amount exceeds the ${category.name} limit.`);
+      if (item.amountMinor > policy.receiptThresholdMinor && !item.receiptId)
+        problems.push(`${label}: a receipt is required.`);
+      const age = (Date.parse(currentDay) - Date.parse(item.date)) / 86400000;
+      if (age < 0) problems.push(`${label}: expense date cannot be in the future.`);
+      if (age > policy.submissionWindowDays)
+        problems.push(
+          `${label}: expense is outside the ${policy.submissionWindowDays}-day submission window.`,
+        );
+    },
+  );
   return problems;
 }
+/** Create balanced expense debits and a bank or cash credit from the saved policy. */
 export function journalEntries(claim, method) {
   const accounts = new Map();
   for (const item of claim.items) {
-    const category = claim.policySnapshot.categories.find(c => c.name === item.category);
+    const category = claim.policySnapshot.categories.find(
+      /* Find the accounting category from the policy saved at submission. */ (c) =>
+        c.name === item.category,
+    );
     if (!category) throw new Error('Submitted claim has no matching accounting category.');
     accounts.set(category.account, (accounts.get(category.account) || 0) + item.amountMinor);
   }
-  return [...accounts].map(([account, debitMinor]) => ({ account, debitMinor, creditMinor: 0 })).concat([
-    { account: method === 'Cash' ? '1010 · Cash' : '1020 · Bank', debitMinor: 0, creditMinor: claim.totalMinor },
-  ]);
+  return [...accounts]
+    .map(
+      /* Create a debit entry for each expense account. */ ([account, debitMinor]) => ({
+        account,
+        debitMinor,
+        creditMinor: 0,
+      }),
+    )
+    .concat([
+      {
+        account: method === 'Cash' ? '1010 · Cash' : '1020 · Bank',
+        debitMinor: 0,
+        creditMinor: claim.totalMinor,
+      },
+    ]);
 }

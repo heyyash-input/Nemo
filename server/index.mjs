@@ -1,28 +1,48 @@
 import 'dotenv/config';
 import { createApp } from './app.mjs';
 import { connectDatabase } from './database.mjs';
-import { initializePolicy, seedDemo } from './seed.mjs';
-import { Claim, User, Session, Policy, SignupChallenge } from './models.mjs';
-import { createMailer } from './mail.mjs';
+import { initializePolicy, seedDemo, ensureDemoAccounts } from './seed.mjs';
+import { Claim, User, Session, Policy } from './models.mjs';
 import { readConfig } from './config.mjs';
 
 const config = readConfig();
-const mailer = createMailer();
-if (config.production && !mailer.ready) throw new Error(`Configure email signup before production startup: ${mailer.missing.join(', ')}`);
-if (!mailer.ready) console.warn(`Email signup unavailable until configured: ${mailer.missing.join(', ')}`);
+const demo = process.env.DEMO_MODE === 'true' && !config.production;
 const database = await connectDatabase();
-await Promise.all([Claim, User, Session, Policy, SignupChallenge].map(model => model.init()));
+await Promise.all(
+  [Claim, User, Session, Policy].map(
+    /* Create model indexes before accepting requests. */ (model) => model.init(),
+  ),
+);
 await initializePolicy();
-const demo = database.local && process.env.DEMO_MODE === 'true' && !config.production;
-if (demo || (process.env.SEED_DEMO === 'true' && process.env.NODE_ENV !== 'production')) await seedDemo(database.local);
-const app = createApp({ ...config, demo, mailer, otpSecret: process.env.OTP_SECRET });
-const server = app.listen(config.port, config.host, () => console.log(`Nemo API listening on ${config.host}:${config.port}`));
+if (
+  (demo && database.local) ||
+  (process.env.SEED_DEMO === 'true' && process.env.NODE_ENV !== 'production')
+)
+  await seedDemo(database.local);
+if (demo) await ensureDemoAccounts();
+const app = createApp({ ...config, demo });
+const server = app.listen(
+  config.port,
+  config.host,
+  /* Print the API address after listening begins. */ () =>
+    console.log(`Nemo API listening on ${config.host}:${config.port}`),
+);
 let closing = false;
+/** Stop accepting requests, close idle connections, and release MongoDB before exiting. */
 async function close() {
   if (closing) return;
   closing = true;
-  const deadline = setTimeout(() => process.exit(1), 15000).unref();
-  server.close(async () => { await database.close(); clearTimeout(deadline); process.exit(0); });
+  const deadline = setTimeout(
+    /* Exit if graceful shutdown exceeds its deadline. */ () => process.exit(1),
+    15000,
+  ).unref();
+  server.close(
+    /* Close MongoDB after HTTP requests finish and then exit. */ async () => {
+      await database.close();
+      clearTimeout(deadline);
+      process.exit(0);
+    },
+  );
   server.closeIdleConnections();
 }
 process.on('SIGINT', close);

@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1380" viewBox="0 0 1600 1380" role="img" aria-labelledby="title desc">
+<title id="title">Nemo Administrator API flow</title><desc id="desc">Manage people, company policy, and oversight. These are independent administration paths.</desc>
+<rect width="1600" height="1380" fill="#f5f8f5"/>
+<text x="64" y="38" dominant-baseline="text-before-edge" font-family="Segoe UI,Arial,sans-serif" font-size="17" font-weight="700" fill="#51775e">NEMO / API FLOW</text>
+<text x="64" y="77" dominant-baseline="text-before-edge" font-family="Segoe UI,Arial,sans-serif" font-size="48" font-weight="700" fill="#17362e">Administrator</text>
+<text x="64" y="144" dominant-baseline="text-before-edge" font-family="Segoe UI,Arial,sans-serif" font-size="23" font-weight="400" fill="#53665f">Manage people, company policy, and oversight. These are independent administration paths.</text>
+<rect x="64" y="205" width="1472" height="100" rx="16" fill="#173e33" stroke="#173e33" stroke-width="2"/>
+<text x="90" y="222" dominant-baseline="text-before-edge" font-family="Segoe UI,Arial,sans-serif" font-size="16" font-weight="700" fill="#cde6b6">SIGN IN &amp; RESTORE</text>
+<text x="90" y="251" dominant-baseline="text-before-edge" font-family="Consolas,monospace" font-size="23" font-weight="400" fill="white">POST /api/auth/login  -&gt;  JWT session cookie  -&gt;  GET /api/auth/me</text>
+<text x="90" y="281" dominant-baseline="text-before-edge" font-family="Segoe UI,Arial,sans-serif" font-size="15" font-weight="400" fill="#d0dfd5">Employee signup also issues a session. Roles come from the account, never from the login form.</text>
+<polyline points="800,305 800,334" fill="none" stroke="#769187" stroke-width="3"/><polygon points="800,334 791,321 809,321" fill="#769187"/>
+<rect x="64" y="335" width="1472" height="70" rx="16" fill="#e6efdf" stroke="#c5d8bb" stroke-width="2"/>
+<text x="90" y="347" dominant-baseline="text-before-edge" font-family="Segoe UI,Arial,sans-serif" font-size="15" font-weight="700" fill="#40603d">ON EVERY PROTECTED API REQUEST</text>
+<text x="90" y="372" dominant-baseline="text-before-edge" font-family="Segoe UI,Arial,sans-serif" font-size="22" font-weight="400" fill="#17362e">Verify JWT -&gt; check unexpired MongoDB session -&gt; load active user -&gt; enforce role and ownership</text>
+<polyline points="800,405 800,425 294,425 294,452" fill="none" stroke="#769187" stroke-width="3"/><polygon points="294,452 285,439 303,439" fill="#769187"/>
+<polyline points="800,405 800,452" fill="none" stroke="#769187" stroke-width="3"/><polygon points="800,452 791,439 809,439" fill="#769187"/>
+<polyline points="800,405 800,425 1306,425 1306,452" fill="none" stroke="#769187" stroke-width="3"/><polygon points="1306,452 1297,439 1315,439" fill="#769187"/>
+<rect x="64" y="453" width="460" height="588" rx="16" fill="white" stroke="#cfdbd4" stroke-width="2"/>
+<rect x="88" y="475" width="44" height="36" rx="8" fill="#e6efdf" stroke="#e6efdf" stroke-width="2"/>
+<text x="98" y="479" dominant-baseline="text-before-edge" font-family="Segoe UI,Arial,sans-serif" font-size="22" font-weight="700" fill="#17362e">A</text>
+<text x="88" y="529" dominant-baseline="text-before-edge" font-family="Segoe UI,Arial,sans-serif" font-size="27" font-weight="700" fill="#17362e">People and roles</text>
+<text x="88" y="594" dominant-baseline="text-before-edge" font-family="Segoe UI,Arial,sans-serif" font-size="15" font-weight="700" fill="#617968">ACTION / API</text>
+<text x="88" y="623" dominant-baseline="text-before-edge" font-family="Consolas,monospace" font-size="19" font-weight="400" fill="#1d5f78">GET /api/users</text>
+<text x="88" y="652" dominant-baseline="text-before-edge" font-family="Consolas,monospace" font-size="19" font-weight="400" fill="#1d5f78">POST /api/users</text>
+<text x="88" y="681" dominant-baseline="text-before-edge" font-family="Consolas,monospace" font-size="19" font-weight="400" fill="#1d5f78">PUT /api/users/:id</text>
+<text x="88" y="724" dominant-baseline="text-before-edge" font-family="Segoe UI,Arial,sans-serif" font-size="15" font-weight="700" fill="#617968">SERVER CHECKS</text>
+<text x="88" y="753" dominant-baseline="text-before-edge" font-family="Segoe UI,Arial,sans-serif" font-size="20" font-weight="400" fill="#17362e">Admin role; valid manager assignment.</text>
+<text x="88" y="782" dominant-baseline="text-before-edge" font-family="Segoe UI,Arial,sans-serif" font-size="20" font-weight="400" fill="#17362e">Prevent removing own Admin access.</text>
+<text x="88" y="811" dominant-baseline="text-before-edge" font-family="Segoe UI,Arial,sans-serif" font-size="20" font-weight="400" fill="#17362e">Protect managers with assigned users</text>
+<text x="88" y="840" dominant-baseline="text-before-edge" font-family="Segoe UI,Arial,sans-serif" font-size="20" font-weight="400" fill="#17362e">or pending approvals.</text>
+<text x="88" y="883" dominant-baseline="text-before-edge" font-family="Segoe UI,Arial,sans-serif" font-size="15" font-weight="700" fill="#617968">DATABASE RESULT</text>
+<text x="88" y="912" dominant-baseline="text-before-edge" font-family="Segoe UI,Arial,sans-serif" font-size="20" font-weight="400" fill="#17362e">Create/update User + AdminAudit.</text>
+<text x="88" y="941" dominant-baseline="text-before-edge" font-family="Segoe UI,Arial,sans-serif" font-size="20" font-weight="400" fill="#17362e">Account updates revoke user sessions.</text>
+<text x="88" y="970" dominant-baseline="text-before-edge" font-family="Segoe UI,Arial,sans-serif" font-size="18" font-weight="400" fill="#53665f">Employees created here need a manager.</text>
+<rect x="570" y="453" width="460" height="588" rx="16" fill="white" stroke="#cfdbd4" stroke-width="2"/>
+<rect x="594" y="475" width="44" height="36" rx="8" fill="#e6efdf" stroke="#e6efdf" stroke-width="2"/>
+<text x="604" y="479" dominant-baseline="text-before-edge" font-family="Segoe UI,Arial,sans-serif" font-size="22" font-weight="700" fill="#17362e">B</text>
+<text x="594" y="529" dominant-baseline="text-before-edge" font-family="Segoe UI,Arial,sans-serif" font-size="27" font-weight="700" fill="#17362e">Company expense policy</text>
+<text x="594" y="594" dominant-baseline="text-before-edge" font-family="Segoe UI,Arial,sans-serif" font-size="15" font-weight="700" fill="#617968">ACTION / API</text>
+<text x="594" y="623" dominant-baseline="text-before-edge" font-family="Consolas,monospace" font-size="19" font-weight="400" fill="#1d5f78">GET /api/policy</text>
+<text x="594" y="652" dominant-baseline="text-before-edge" font-family="Consolas,monospace" font-size="19" font-weight="400" fill="#1d5f78">PUT /api/policy</text>
+<text x="594" y="695" dominant-baseline="text-before-edge" font-family="Segoe UI,Arial,sans-serif" font-size="15" font-weight="700" fill="#617968">SERVER CHECKS</text>
+<text x="594" y="724" dominant-baseline="text-before-edge" font-family="Segoe UI,Arial,sans-serif" font-size="20" font-weight="400" fill="#17362e">Admin role for writes.</text>
+<text x="594" y="753" dominant-baseline="text-before-edge" font-family="Segoe UI,Arial,sans-serif" font-size="20" font-weight="400" fill="#17362e">Validate amounts, categories, window.</text>
+<text x="594" y="782" dominant-baseline="text-before-edge" font-family="Segoe UI,Arial,sans-serif" font-size="20" font-weight="400" fill="#17362e">Version must match current policy.</text>
+<text x="594" y="825" dominant-baseline="text-before-edge" font-family="Segoe UI,Arial,sans-serif" font-size="15" font-weight="700" fill="#617968">DATABASE RESULT</text>
+<text x="594" y="854" dominant-baseline="text-before-edge" font-family="Segoe UI,Arial,sans-serif" font-size="20" font-weight="400" fill="#17362e">Update Policy; increment version.</text>
+<text x="594" y="883" dominant-baseline="text-before-edge" font-family="Segoe UI,Arial,sans-serif" font-size="20" font-weight="400" fill="#17362e">Record administrator audit event.</text>
+<text x="594" y="912" dominant-baseline="text-before-edge" font-family="Segoe UI,Arial,sans-serif" font-size="18" font-weight="400" fill="#53665f">Existing submitted claims retain</text>
+<text x="594" y="939" dominant-baseline="text-before-edge" font-family="Segoe UI,Arial,sans-serif" font-size="18" font-weight="400" fill="#53665f">their saved policy snapshots.</text>
+<rect x="1076" y="453" width="460" height="588" rx="16" fill="white" stroke="#cfdbd4" stroke-width="2"/>
+<rect x="1100" y="475" width="44" height="36" rx="8" fill="#e6efdf" stroke="#e6efdf" stroke-width="2"/>
+<text x="1110" y="479" dominant-baseline="text-before-edge" font-family="Segoe UI,Arial,sans-serif" font-size="22" font-weight="700" fill="#17362e">C</text>
+<text x="1100" y="529" dominant-baseline="text-before-edge" font-family="Segoe UI,Arial,sans-serif" font-size="27" font-weight="700" fill="#17362e">Oversight and audit</text>
+<text x="1100" y="594" dominant-baseline="text-before-edge" font-family="Segoe UI,Arial,sans-serif" font-size="15" font-weight="700" fill="#617968">ACTION / API</text>
+<text x="1100" y="623" dominant-baseline="text-before-edge" font-family="Consolas,monospace" font-size="19" font-weight="400" fill="#1d5f78">GET /api/claims</text>
+<text x="1100" y="652" dominant-baseline="text-before-edge" font-family="Consolas,monospace" font-size="19" font-weight="400" fill="#1d5f78">GET /api/claims/:id</text>
+<text x="1100" y="681" dominant-baseline="text-before-edge" font-family="Consolas,monospace" font-size="19" font-weight="400" fill="#1d5f78">GET /api/receipts/:id</text>
+<text x="1100" y="710" dominant-baseline="text-before-edge" font-family="Consolas,monospace" font-size="19" font-weight="400" fill="#1d5f78">GET /api/audit</text>
+<text x="1100" y="753" dominant-baseline="text-before-edge" font-family="Segoe UI,Arial,sans-serif" font-size="15" font-weight="700" fill="#617968">SERVER VISIBILITY</text>
+<text x="1100" y="782" dominant-baseline="text-before-edge" font-family="Segoe UI,Arial,sans-serif" font-size="20" font-weight="400" fill="#17362e">Own claims plus other non-drafts.</text>
+<text x="1100" y="811" dominant-baseline="text-before-edge" font-family="Segoe UI,Arial,sans-serif" font-size="20" font-weight="400" fill="#17362e">Receipt access follows claim visibility.</text>
+<text x="1100" y="854" dominant-baseline="text-before-edge" font-family="Segoe UI,Arial,sans-serif" font-size="15" font-weight="700" fill="#617968">RESPONSE</text>
+<text x="1100" y="883" dominant-baseline="text-before-edge" font-family="Segoe UI,Arial,sans-serif" font-size="20" font-weight="400" fill="#17362e">Claim history + AdminAudit events.</text>
+<text x="1100" y="912" dominant-baseline="text-before-edge" font-family="Segoe UI,Arial,sans-serif" font-size="20" font-weight="400" fill="#17362e">Audit returns up to 300 recent events.</text>
+<text x="1100" y="941" dominant-baseline="text-before-edge" font-family="Segoe UI,Arial,sans-serif" font-size="18" font-weight="400" fill="#53665f">Admin cannot call Finance settlement.</text>
+<rect x="64" y="1076" width="1472" height="100" rx="16" fill="#edf2e9" stroke="#cfdbd4" stroke-width="2"/>
+<text x="90" y="1096" dominant-baseline="text-before-edge" font-family="Segoe UI,Arial,sans-serif" font-size="15" font-weight="700" fill="#51775e">OUTCOME &amp; HANDOFF</text>
+<text x="90" y="1128" dominant-baseline="text-before-edge" font-family="Segoe UI,Arial,sans-serif" font-size="22" font-weight="400" fill="#17362e">First Admin: local bootstrap command. Public signup always creates an Employee.</text>
+<text x="64" y="1200" dominant-baseline="text-before-edge" font-family="Segoe UI,Arial,sans-serif" font-size="20" font-weight="400" fill="#17362e">Admin can view company reimbursements; Manager and Finance actions require those roles.</text>
+<text x="64" y="1234" dominant-baseline="text-before-edge" font-family="Segoe UI,Arial,sans-serif" font-size="20" font-weight="400" fill="#53665f">Personal expense claims use the same owner workflow and manager requirement as Employee.</text>
+<text x="64" y="1284" dominant-baseline="text-before-edge" font-family="Segoe UI,Arial,sans-serif" font-size="18" font-weight="400" fill="#53665f">All roles: POST /api/auth/password changes password and revokes sessions; POST /api/auth/logout ends the session.</text>
+<text x="64" y="1316" dominant-baseline="text-before-edge" font-family="Segoe UI,Arial,sans-serif" font-size="18" font-weight="400" fill="#53665f">JWT expires after 15 minutes; no refresh token. Blue text = API endpoint. Routes checked against server/app.mjs.</text>
+</svg>

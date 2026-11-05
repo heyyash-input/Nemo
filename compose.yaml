@@ -1,15 +1,11 @@
 services:
   nemo:
     build: .
-    env_file: .env.docker
+    env_file: .env
     environment:
-      NODE_ENV: production
       HOST: 0.0.0.0
-      PORT: 4000
-      DEMO_MODE: "false"
-      SEED_DEMO: "false"
     ports:
-      - "127.0.0.1:4000:4000"
+      - "127.0.0.1:${PORT:-4000}:${PORT:-4000}"
     init: true
     restart: unless-stopped
     read_only: true

@@ -1,5 +1,5 @@
 param(
-    [ValidateSet('dev', 'build', 'test', 'start', 'admin', 'check-mail')]
+    [ValidateSet('dev', 'build', 'test', 'start', 'admin', 'format', 'format:check')]
     [string]$Task = 'dev'
 )
 
