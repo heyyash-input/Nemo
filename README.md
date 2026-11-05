@@ -68,10 +68,11 @@ Install these tools and make them available in your terminal:
 
 ### 2. Clone and install
 
+Open PowerShell in the directory where you want to download the project, then run:
+
 ```powershell
-cd C:\CLAUDE_env
-git clone https://github.com/heyyash-input/Nemo.git Nemo_PBL
-cd Nemo_PBL
+git clone https://github.com/heyyash-input/Nemo.git
+cd Nemo
 uv venv .venv
 uv run --no-project --python .venv/Scripts/python.exe npm.cmd ci
 ```
